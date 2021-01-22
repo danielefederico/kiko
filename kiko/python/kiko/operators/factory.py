@@ -12,15 +12,17 @@
 #
 # ==============================================================================
 
+import sys
 from collections import OrderedDict
 
 from kiko.exceptions import InvalidClassException, InvalidFacadeException
 from kiko.operators.baseoperator import BaseOperator
 from kiko.apps.basefacade import BaseFacade
 from kiko.utils.patterns import Singleton
+from kiko.vendor import six
 
+@six.add_metaclass(Singleton)
 class OperatorsFactory(object):
-    __metaclass__ = Singleton
 
     def __init__(self):
         self._entries = OrderedDict()
@@ -52,8 +54,8 @@ class OperatorsFactory(object):
             return self._entries.keys()
 
         res = set()
-        for versions in self._entries.itervalues():
-            for c in versions.itervalues():
+        for versions in self._entries.values():
+            for c in versions.values():
                 if c.is_app_supported(app):
                     res.add(c.name())
                 break
@@ -61,8 +63,8 @@ class OperatorsFactory(object):
 
     def get_channel_operator_names(self, app=None):
         res = set()
-        for versions in self._entries.itervalues():
-            for c in versions.itervalues():
+        for versions in self._entries.values():
+            for c in versions.values():
                 if c.is_channel_operator() and (app is None or
                                                 c.is_app_supported(app)):
                     res.add(c.name())
@@ -71,9 +73,8 @@ class OperatorsFactory(object):
 
     def get_item_operator_names(self, app=None):
         res = set()
-        for versions in self._entries.itervalues():
-            for c in versions.itervalues():
-                import os
+        for versions in self._entries.values():
+            for c in versions.values():
                 if not c.is_channel_operator() and (app is None or
                                                     c.is_app_supported(app)):
                     res.add(c.name())
@@ -97,7 +98,7 @@ class OperatorsFactory(object):
         if not name in self._entries:
             return None
 
-        versions = self._entries[name].keys()
+        versions = list(self._entries[name].keys())
         versions.sort()
         return versions[-1]
 
@@ -108,8 +109,8 @@ class OperatorsFactory(object):
         self._entries.clear()
 
     def reload_operators(self):
-        for name, versions in self._entries.iteritems():
-            for ver, constructor in versions.iteritems():
+        for name, versions in self._entries.items():
+            for ver, constructor in versions.items():
                 module_name = constructor.__module__
                 class_name = constructor.__name__
 

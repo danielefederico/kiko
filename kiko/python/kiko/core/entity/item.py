@@ -12,22 +12,22 @@
 #
 # ==============================================================================
 
-from types import NoneType
 from collections import OrderedDict
 
 from abc import ABCMeta, abstractmethod
 
 from kiko.exceptions import InvalidItemException
 from kiko.core.entity.handlers import channelhandler, chunkhandler, maptohandler
+from kiko.vendor import six
 
+@six.add_metaclass(ABCMeta)
 class BaseItem(channelhandler.ChannelHandler, chunkhandler.ChunkHandler,
                maptohandler.MapToHandler):
-    __metaclass__ = ABCMeta
 
-    _parent_type = NoneType
-    _child_type = NoneType
-    _channel_type = NoneType
-    _chunk_type = NoneType
+    _parent_type = type(None)
+    _child_type = type(None)
+    _channel_type = type(None)
+    _chunk_type = type(None)
 
     def __init__(self, parent, name):
         channelhandler.ChannelHandler.__init__(self)
@@ -93,7 +93,7 @@ class BaseItem(channelhandler.ChannelHandler, chunkhandler.ChunkHandler,
         return self._children.keys()
 
     def iter_children(self):
-        for c in self._children.itervalues():
+        for c in self._children.values():
             yield c
 
     def remove_child(self, child):
@@ -170,6 +170,6 @@ Item._child_type = Item
 
 RootItem._chunk_type = ItemChunk
 RootItem._channel_type = Channel
-RootItem._parent_type = NoneType
+RootItem._parent_type = type(None)
 RootItem._child_type = Item
 

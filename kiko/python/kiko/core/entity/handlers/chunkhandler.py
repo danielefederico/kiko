@@ -12,13 +12,12 @@
 #
 # ==============================================================================
 
-from types import NoneType
 from collections import OrderedDict
 
 from kiko.exceptions import InvalidChunkException
 
 class ChunkHandler(object):
-    _chunk_type = NoneType
+    _chunk_type = type(None)
 
     def __init__(self):
         self._chunks = OrderedDict()
@@ -34,7 +33,7 @@ class ChunkHandler(object):
         return self._chunks.keys()
 
     def iter_chunks(self):
-        for c in self._chunks.itervalues():
+        for c in self._chunks.values():
             yield c
 
     def remove_chunk(self, chunk):
